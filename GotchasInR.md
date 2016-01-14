@@ -89,6 +89,10 @@
 * Be careful using "auto generated" names, such as column headers (eg
   "V1" in `read.csv`). These might change as R evolves (eg
   `reshape2::melt()` changed from [X1 to Var1][MeltColChange]).
+* ggplot evaluates expressions lexically when they are needed. If you
+  have provided a "data" object, they will be evaluated there. For a
+  NULL data object, evaluation is in the current local context.
+
 
 [Parsons1]: https://class.coursera.org/rprog-033/forum/thread?thread_id=224#post-1472
 [MeltColChange]: https://github.com/hadley/reshape/blob/master/README.md

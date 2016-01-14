@@ -2157,6 +2157,12 @@ specification.
 
 ### Lattice Plotting Functions ###
 
+Even though it seems like these functions are doing the plotting, they
+are actually returning a complex list object of class "trellis", which
+auto-prints itself when it is generated from the command line. If you
+capture the output into a variable, you will need to explicitly invoke
+the variable to render the plot.
+
 * Shared (typically) parameters
   * `groups = myGrouping` = "myGrouping" is either a variable or
     expression evaluated within the "data" context, and is used to
@@ -2169,6 +2175,8 @@ specification.
     legend is rendered. Takes a list with a bunch of sub
     options. Default positioning is unfortunately not very space
     efficient.
+  * `panel` = A powerful mechanism to control how each panel of the
+    lattice is rendered. See below for more details.
 * Univariate Plotting
   * `densityplot()` =
   * `histogram()` =
@@ -2194,6 +2202,13 @@ specification.
   * `splom()` =
   * `parallel()` =
 
+### Lattice Panel Functions ###
+
+Every lattice graphics function has a `*.panel` function associated
+with it (for example `xyplot.panel()`. You can redefine the function
+that a method uses with the "panel" argument.
+
+
 ### Lattice Examples ###
 
 ```R
@@ -2208,10 +2223,71 @@ xyplot(Ozone ~ Wind | MonName, data = airquality, as.table = T)
 Attempt to combine best features of base and lattice graphics, while
 defining a flexible graphics language.
 
+* http://ggplot2.org
+  * Documentation: http://docs.ggplot2.org/current/index.html
 * Pros
   * Rich graphics language, intuitive by some measures
   * Extensive defaults are generally "what you want"
   * Plots may be constructed in steps, allowing sequential alterations
+* "Grammar of graphics" = Nouns, verbs and adjectives to define and
+  describe plots.
+  * `aes()` = Aesthetics, how things appear (size, color, shape, etc)
+  * `geom_*()` = Geometry, how things are organized and laid out
+  * Works with labels to reference data components. Columns and other
+    subsets should be named!
+
+### Argument Management in ggplot ###
+
+ggplot heavily leverages lexical scoping. Normally, the expression
+`mpg$hwy` is a 234 integer vector from the built-in "mpg" data
+set. However, if you pass `p <- qplot( mpg$displ, mpg$hwy )` and
+inspect p with str(), you'll find that the Y axis is not being stored
+as a vector but rather as a "language" object "mpg$hwy". When that
+information is needed, ggplot will recover the data it needs with
+`eval( mapping$y, envir = data)` (I'm presuming here); That is, the
+string expression you provided will be evaluated in the context of the
+"data" argument you provided; If that was not given, then the
+environment is the current one.
+
+I presume this is occuring many places "naked" identifiers are being
+used. This means the longer you hold onto a ggplot object where "data"
+has not been defined, the more likely it is that something in the
+lexical environment has changed without you noticing it.
+
+The "data" argument is not stored as dynmaically-evaluated languge: It
+is held as a full copy of the input. From a memory management
+perspective this might be undesirable for very large data sets.
+
+### Geom ###
+
+* `geom_smooth()` = smoothed conditional mean
+  * `geom_density()` = smooth density estimate
+
+### ggplot2 Functions ###
+
+* `qplot( myXlabel, myYlabel, data = myData)` = Quick Plot.
+  * First two arguments are the unquoted names of the x and y variables.
+  * `data` = Optional data.frame, where information is extracted
+    from. If not provided, then the labels will be lexically searched
+    in the environment (and a fatal error thrown if not found)
+  * Other data sources can be used to configure aspects of the
+    plot. For example, `color = vendor` will look for a data source
+    labeled "vendor" (in the provided data or the environment),
+    factorize it if needed, and assign the color palette to the points
+    based on that factor.
+  * `color` (aka `colour`) = sets the point color
+  * `shape` = sets the point shape
+    * `scale_shape()`
+  * `geom` = Define one or more geoms to structure the plot. If left
+    blank defaults are chosen based on your input.
+  * `facets` = Easily define faceting with a formula that defines `col
+    ~ row` faceting variables, with a `.` used if only rows or columns
+    are needed.
+      
+  ```R
+  qplot(displ, hwy, data = mpg, geom = c("point", "smooth")) # XY plot
+  qplot(hwy, data = mpg, fill = as.factor(cyl), facets = drv ~ .) # Histogram
+  ```
 
 ## <a name='networkD3'></a>D3 Networks ##
 
@@ -3254,3 +3330,4 @@ Not R *per se*, but these have been useful in making this document...
 [rgraphgallery]: http://gallery.r-enthusiasts.com/
 [showsettings]: http://www.magesblog.com/2012/12/changing-colours-and-legends-in-lattice.html
 [npslattice]: https://science.nature.nps.gov/im/datamgmt/statistics/r/graphics/lattice.cfm
+[gotchas]: https://github.com/maptracker/GeneralUtility/blob/master/GotchasInR.md
