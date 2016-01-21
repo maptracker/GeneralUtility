@@ -78,9 +78,13 @@
 * [Probability](#probability)
   * [Distributions](#distributions)
   * [Random Number Generator](#rng)
+* [Clustering](#clustering)
+  * [Hierarchical Clustering](#HierarchicalClustering)
+  * [K-Means Clustering](#kmeans)
 * [Random Things](#randomstuff)
   * [Generating Examples](#makeexamp)
   * [Internal R Stuff](#rinternals)
+  * [Lexical Scoping](#lexicalscoping)
   * [Serialization](#serialization)
   * [Scott Wisdom](#wisdom)
   * [Weird Things](#weird)
@@ -165,6 +169,8 @@
 * `library(codetools)` / `?codetools` : debugging utilities
   * `checkUsage( myFunction )` : provides some feedback on potential
     issues, like undeclared variables.
+* [The Elements of Statistical Learning][ElStatLearn] = Available free
+  online, heavy statistical reference
 
 # <a name='objects'></a>Objects #
 
@@ -3103,6 +3109,138 @@ summary(y)
 plot(x,y)
 ```
 
+# <a name='clustering'></a>Clustering #
+
+Finding things that are "near" to each other
+
+* Clustering can be unstable - small changes to the input data can
+  result in different final clusters being generated
+* Turning the analysis into finite clusters requires a decision of
+  "where to cut", which will generally be at least partly arbitrary.
+
+#### Requirements
+
+* Distance metric
+  * If the metric is poorly defined the results will be as well
+  * Continuous metrics
+    * [Euclidean][Euclidean_distance]
+    * Correlation similarity
+  * Binary metric
+    * [Manhattan distance][Taxicabgeometry]
+* Merging approach = When clusters of two or more points are merged,
+  how do you calculate the cluster-cluster distance?
+
+## <a name='HierarchicalClustering'></a>Hierarchical Clustering ##
+
+Begin by inspecting the closest two entries, then the next closest,
+etc.
+
+* Will generate a dendogram.
+* Deterministic
+
+### Functions
+
+* `dist(myDF, method = "euclidean")` = Calculates the distance for
+  the data.frame "myDF", using the specified calculation method
+  * Methods:
+    * "euclidean" = [Euclidean distance][Euclidean_distance]
+    * "manhattan" = [Manhattan distance][Taxicabgeometry]
+      * "canberra" = [Canberra distance][Canberra_distance] (weighted Manhattan)
+    * "maximum"
+    * "binary"
+    * "minkowski" = [Minkowski distance][Minkowski_distance]
+      * p = 1 &rarr; Manhattan
+      * p = 2 &rarr; Euclidean
+      * ... plus any other value of p
+  * Returns a double vector of class `dist`
+* `myHier <- hclust(myDist)` = Generates hierarchical clustering of
+  the provided distance information
+  * `plot(myHier, frame.plot = TRUE)` = Plots the dendrogram, saavy to
+    the hierarchical data.
+    * "frame.plot" = Default FALSE, set to TRUE to see height values
+    * "hang" = fraction of total plot height to draw "leaf"
+      lines. These terminal lines are aesthetic only - the
+      relationship (distance) between groups is represented by the
+      relative positions of the horizontal connecting bars, which
+      represent the groupings.
+      * "0" = No leaves at all
+      * "-1" = drops all leaves to the x-axis.
+  * `cutree( myHier, k = 4 )` = Cuts the provided tree object into "k" groups.
+    * Returns a named integer vector specifying group membership
+    * "h" = Alternatively, provide an explicit height to cut at
+* `heatmap(myMatrix)`
+
+## <a name=>'kmeans'</a>K-Means Clustering ##
+
+Groups a set of objects into a requested number of clusters.
+
+1. Specify the number of clusters
+1. Determine initial centroid positions
+   * Random assignment initially?
+1. For each object, assign it to the closest centroid'
+   * Using whatever distance metric you've chosen
+   * How to break ties?
+1. Recalculate centroid positions based on the positions of their members
+   * What happens if a centroid has no members?
+1. Repeat steps 3-4
+   * Presumably have a convergence threshold to stop the process.
+
+* Returns:
+  * Estimated location of each centroid
+  * Objects assigned to each centroid
+
+### Functions
+
+* `kmeans( x = myData, centers = clusters )`
+  * "x" = a data set that can be coerced into a numeric matrix
+  * "centers" = Either an integer representing the number of clusters,
+    or a set of cluster starting points
+    * If an integer is provided, the centers will be randomly picked
+      from your data points.
+      * "nstart" = Default 1. If using integer centers, the nstart
+        parameter specifies how many random starting combinations to try.
+  * "iter.max" = Default 10, maximum number of allowed iterations
+  * "algorithm" = Choose the specific algorithm.
+    * "Hartigan-Wong" = Default, 'generally does a better job'
+    * Two other options: "Lloyd" === "Forgy", or "MacQueen"
+  * Returns a List of class "kmeans"
+    * `$centers` = Matrix of centroid positions, named by cluster
+      number and dimension names.
+    * `$cluster` = Integer vector assigning cluster number to each
+      input object.
+    * `$size` = Integer vector of the count of objects in each cluster
+    * `$totss` = total sum of squares
+    * `$withinss` = Vector with sum of squares for each individual cluster
+    * `$iter` = Number of iterations performed
+
+#### Plotting Example ####
+
+```R
+## From Coursera lecture
+## https://www.coursera.org/learn/exploratory-data-analysis/lecture/6hOqi/k-means-clustering-part-2
+set.seed(1234)
+## Generate 30 points randomly assorted around 3 centroids: (1,1), (2,2), (3,1)
+numPoints <- 30
+x <- rnorm(numPoints, mean = rep(1:3, each = numPoints/3), sd = 0.2)
+y <- rnorm(numPoints, mean = rep(c(1, 2, 1), each = numPoints/3), sd = 0.2)
+## Organize as DF
+dataFrame <- data.frame(x = x, y = y, row.names = 1:numPoints)
+
+## Look for the clusters. Because we generated three clusters above,
+## unambiguous results should be found when looking for 3. Trying
+## other cluster numbers (searchFor) will result in different
+## outcomes each time you re-run the analysis
+clusterAndPlot <- function( searchFor ) {
+    kmeansObj <- kmeans(dataFrame, centers = searchFor)
+    ## Plot and label the input
+    plot(x, y, col = kmeansObj$cluster, pch = 1, cex = 2)
+    text(x + 0.05, y + 0.05, labels = as.character(1:numPoints), col = "blue")
+    ## Add the centroids
+    points(kmeansObj$centers, col = 1:searchFor, pch = 3, cex = 3, lwd = 3)
+}
+clusterAndPlot(3)
+```
+
 # <a name='randomstuff'></a>Random Things #
 
 * `R.Version()` = show the software version information for current
@@ -3138,10 +3276,22 @@ sprintf("x <- c(%s)", paste(as.integer(runif(10, min = 1, max = 101)),
   object (returns it), a positive integer (takes from search() list),
   a character string (match by name) or -1 (calling environment).
 
+## <a name='lexicalscoping'></a>Lexical Scoping ##
+
+Still collecting thoughts here.
+
+* `match.call( definition = myFunc )`
+  * Returns a 'language' object of class 'call'
+  * "definition" = a function, by default the container your calling within
+  * "expand.dots" = Default TRUE, if `...` arguments should be expanded
+  * `sys.call(  )` = TODO
+* `eval( myExpression, envir = myEnv )` = Evaluates the provided
+  expression in the specified environment
+  * Expression can be a `call` or `expression` object, or a named
+    object in the *current* scope.
+
 ## <a name='serialization'></a>Serialization ##
 
-* `match.call()`
-  * Returns a 'language' object
 * `parse()` can be used to process a character string to an R
   'expression'. That expression can then be fed to `eval`, which
   will then execute the code represented by the initial text. So
@@ -3331,3 +3481,8 @@ Not R *per se*, but these have been useful in making this document...
 [showsettings]: http://www.magesblog.com/2012/12/changing-colours-and-legends-in-lattice.html
 [npslattice]: https://science.nature.nps.gov/im/datamgmt/statistics/r/graphics/lattice.cfm
 [gotchas]: https://github.com/maptracker/GeneralUtility/blob/master/GotchasInR.md
+[Taxicabgeometry]: https://en.wikipedia.org/wiki/Taxicab_geometry
+[Euclidean_distance]: https://en.wikipedia.org/wiki/Euclidean_distance
+[Canberra_distance]: https://en.wikipedia.org/wiki/Canberra_distance
+[Minkowski_distance]: https://en.wikipedia.org/wiki/Minkowski_distance
+[ElStatLearn]: http://statweb.stanford.edu/~tibs/ElemStatLearn/download.html
