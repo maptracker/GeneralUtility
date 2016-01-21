@@ -3170,7 +3170,7 @@ etc.
     * "h" = Alternatively, provide an explicit height to cut at
 * `heatmap(myMatrix)`
 
-## <a name=>'kmeans'</a>K-Means Clustering ##
+## <a name='kmeans'</a>K-Means Clustering ##
 
 Groups a set of objects into a requested number of clusters.
 
