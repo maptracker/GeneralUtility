@@ -3169,6 +3169,43 @@ etc.
     * Returns a named integer vector specifying group membership
     * "h" = Alternatively, provide an explicit height to cut at
 * `heatmap(myMatrix)`
+  * Have not yet figured this function out...
+* `library(dendextend)` = From experience, the base dendrogram package
+  is very rudimentary. This library adds some nice extensions to the
+  base functions to make them more useful.
+  * https://cran.r-project.org/web/packages/dendextend/
+  * `install.packages('dendextend')`
+  * `browseVignettes(package = 'dendextend')`
+  * Also extends other R packages:
+    * + `library(ggplot2)` =
+    * + `library(circularize)` = `circlize_dendrogram( myDend )`
+  * `tanglegram( myDend1, myDend2 )` = Compare two dendrograms
+
+Example dendrogram with tree cutting and labeling:
+
+```R
+## Subset of arrest data for murder and assault in the 50 US states
+ma <- USArrests[, c("Murder", "Assault")]
+## (FWIW, I don't think this represents a meaningful clustering of states)
+## Cluster
+mahc <- hclust(dist(ma), "ave")
+## Cut into 6 groups
+ct <- cutree(mahc, k = 6)
+## Get the order of the states along the x axis
+xord = mahc$labels[ mahc$order ];
+## Plot the dendrogram
+plot(mahc, hang = -1)
+## I could not figure out how to color the labels by group.  I also
+## could not eliminate the labels *AND* leave enough vertical space
+## for the text() call. So I will erase the labels with a box:
+numStates = nrow(USArrests)
+rect(-1, -100, numStates + 1, 0, col = "white", border = "white")
+## Also requires hang to be -1 to assure all labels are fully below the axis
+# Finally add the states in, colored by group:
+text(x = 1:numStates, y = 0, label = xord,
+     col  = ct[ xord ], srt = 90, adj = 1)
+## dendextend offers a better path around some of these problems
+```
 
 ## <a name='kmeans'</a>K-Means Clustering ##
 
