@@ -116,11 +116,6 @@
   propagate to the aesthetic.
   [#1](/../../issues/1) *via* [@rossmacp][petra]
 
-
-Arg. [GitHub hyperlinking][GFM] being weird...
-
-[#1](/../../issues/1) *via* [@sdchasalow][scott]
-
 [Parsons1]: https://class.coursera.org/rprog-033/forum/thread?thread_id=224#post-1472
 [MeltColChange]: https://github.com/hadley/reshape/blob/master/README.md
 [GFM]: https://guides.github.com/features/mastering-markdown/#GitHub-flavored-markdown
