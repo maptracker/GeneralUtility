@@ -112,5 +112,13 @@
   the data will be lost, and transformations on the data will not
   propagate to the aesthetic. ( @rossmacp #1 )
 
+
+Arg. [GitHub hyperlinking][GFM] being weird...
+
+#1
+
+@sdchasalow
+
 [Parsons1]: https://class.coursera.org/rprog-033/forum/thread?thread_id=224#post-1472
 [MeltColChange]: https://github.com/hadley/reshape/blob/master/README.md
+[GFM]: https://guides.github.com/features/mastering-markdown/#GitHub-flavored-markdown
