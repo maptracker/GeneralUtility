@@ -96,28 +96,33 @@
   ggplot2, the plyr functions will be higher on the search stack and
   will get used whenever you think you're calling dplyr.
 * `table()` will normally exclude `NA` counts. Use `table(x, exclude =
-  NULL)` if you wish to have NAs explicitly tallied. ( @sdchasalow #1 )
+  NULL)` if you wish to have NAs explicitly tallied.
+  [#1](/../../issues/1) *via* [@sdchasalow][scott]
 * `sample(x)` will return a randomized vector of the elements from x
   **UNLESS** x has length 1. Then it will return `sample(1:x[1])`.
   That is, if `x <- c(12)`, then `sample(x)` will
-  return a randomized vector of `1:12`. ( @sdchasalow #1 )
+  return a randomized vector of `1:12`.
+  [#1](/../../issues/1) *via* [@sdchasalow][scott]
 * `1:length(x)` will behave inappropritately if length(x) == 0. In
   that case you will get `c(1,0)` rather than an empty vector. For
-  safety, use instead `seq_len(length(x))`. ( @sdchasalow #1 )
+  safety, use instead `seq_len(length(x))`.
+  [#1](/../../issues/1) *via* [@sdchasalow][scott]
 * In ggplot, using `aes()` with object names (eg `aes( x = Foo )`)
   will automatically transform the aesthetic if the primary data are
   transformed (eg `ggplot( mydata[order(mydata$Bar), ], aes( x = Foo)
   )`).  However, if you eschew names and pass the raw data instead
   (`aes( x = mydata$Foo)`) the relationship between the aesthetic and
   the data will be lost, and transformations on the data will not
-  propagate to the aesthetic. ( @rossmacp #1 )
+  propagate to the aesthetic.
+  [#1](/../../issues/1) *via* [@rossmacp][petra]
 
 
 Arg. [GitHub hyperlinking][GFM] being weird...
 
-[#1](/../../issues/1)
-[@sdchasalow](/sdchasalow)
+[#1](/../../issues/1) *via* [@sdchasalow][scott]
 
 [Parsons1]: https://class.coursera.org/rprog-033/forum/thread?thread_id=224#post-1472
 [MeltColChange]: https://github.com/hadley/reshape/blob/master/README.md
 [GFM]: https://guides.github.com/features/mastering-markdown/#GitHub-flavored-markdown
+[scott]: https://github.com/sdchasalow
+[petra]: https://github.com/rossmacp
