@@ -117,6 +117,12 @@ Arg. [GitHub hyperlinking][GFM] being weird...
 
 #1
 
+GH-1
+
+https://github.com/maptracker/GeneralUtility/issues/1
+
+sdchasalow#1
+
 @sdchasalow
 
 [Parsons1]: https://class.coursera.org/rprog-033/forum/thread?thread_id=224#post-1472
