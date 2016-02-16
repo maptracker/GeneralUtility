@@ -81,6 +81,8 @@
 * [Clustering](#clustering)
   * [Hierarchical Clustering](#HierarchicalClustering)
   * [K-Means Clustering](#kmeans)
+  * [Singular Value Decomposition](#svd)
+  * [Principal Component Analysis](#pca)
 * [Random Things](#randomstuff)
   * [Generating Examples](#makeexamp)
   * [Internal R Stuff](#rinternals)
@@ -171,6 +173,9 @@
     issues, like undeclared variables.
 * [The Elements of Statistical Learning][ElStatLearn] = Available free
   online, heavy statistical reference
+* The `apropos("foo")` method will find functions that have a
+  case-insensitive substring match to the passed argument (via
+  [StackOverflow][Apropos])
 
 # <a name='objects'></a>Objects #
 
@@ -956,8 +961,8 @@ In v - x : longer object length is not a multiple of shorter object length
 * `dget()` = reads ASCII-serialized R objects
   * Inverse of `dput`
 * `unserialize()` = reconsitute an R object via a [connection](#connections)
-  * Inverse of `serialize`. Can also use `loadRDS`
-* `loadRDS` = Similar to `unserialize`. Preferred?
+  * Inverse of `serialize`. Can also use `readRDS`
+* `readRDS` = Similar to `unserialize`. Preferred?
 * `scan()` = less convenient that read.table, but **much** faster; Useful
   for very large files.
 * <a name='downloadfile'></a>`download.file(url, destination)` =
@@ -1032,7 +1037,7 @@ In v - x : longer object length is not a multiple of shorter object length
   * Default is binary format, but can be set to ASCII
   * Documentation warns that the format may change in future releases of R
 * `saveRDS()` = Serialize a single R object
-  * Inverse of `loadRDS`. Resultant files can also be read by `unserialize`?
+  * Inverse of `readRDS`. Resultant files can also be read by `unserialize`?
 * Lectures point out that text-based formats are more friendly with
   version control systems for finer-granularity change tracking
 * Also see the [Serialization](#serialization) section below
@@ -3278,6 +3283,14 @@ clusterAndPlot <- function( searchFor ) {
 clusterAndPlot(3)
 ```
 
+## <a name='svd'></a>Singular Value Decomposition #
+
+* https://en.wikipedia.org/wiki/Singular_value_decomposition
+
+## <a name='pca'></a>Principal Component Analysis #
+
+* https://en.wikipedia.org/wiki/Principal_component_analysis
+
 # <a name='randomstuff'></a>Random Things #
 
 * `R.Version()` = show the software version information for current
@@ -3523,3 +3536,4 @@ Not R *per se*, but these have been useful in making this document...
 [Canberra_distance]: https://en.wikipedia.org/wiki/Canberra_distance
 [Minkowski_distance]: https://en.wikipedia.org/wiki/Minkowski_distance
 [ElStatLearn]: http://statweb.stanford.edu/~tibs/ElemStatLearn/download.html
+[Apropos]: https://stackoverflow.com/a/1947649
